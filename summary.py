@@ -19,6 +19,8 @@ from NatGas import model as NGModel
 from NatGas import y_pred as ngPred
 from ag import model as agModel
 from ag import y_pred as agPred
+from sklearn.metrics import r2_score
+
 
 
 df = pd.read_csv('GDP.csv')
@@ -38,55 +40,35 @@ modLst.append(('Agriculture', agModel))
 model = StackingRegressor(estimators=modLst, final_estimator=LinearRegression())
 
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=0)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.5, random_state=0)
 
 
 model.fit(X_train, y_train)
-print(model.get_params())
 
-
-# meta_coef = model.final_estimator_.coef_
-# print(meta_coef)
-# finalPred = model.predict(X_test)
+y_pred = model.predict(X_test)
 
 
 
+mse = mean_squared_error(y_test, y_pred)
+
+#print("Mean Squared Error:", mse)
+mae = mean_absolute_error(y_test, y_pred)
+
+print("Mean Absolute Error:", mae)
+
+rmse = np.sqrt(mse)
+error_percentage = rmse / (y_test.max() - y_test.min()) * 100
+print("Percentage Error:", error_percentage)
+r2 = r2_score(y_test, y_pred)
+
+# Print R-squared score
+print("R-squared score:", r2)
+#print(model.coef_)
 
 
+# print(coalPred.shape)
+# print(elecPred.shape)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# mse = mean_squared_error(y_test, finalPred)
-
-# #print("Mean Squared Error:", mse)
-# mae = mean_absolute_error(y_test, finalPred)
-
-# print("Mean Absolute Error:", mae)
-
-# rmse = np.sqrt(mse)
-# error_percentage = rmse / (y_test.max() - y_test.min()) * 100
-# print("Percentage Error:", error_percentage)
-
-# print(model.coef_)
-
-
-# # print(coalPred.shape)
-# # print(elecPred.shape)
-
-# # average = np.mean([coalPred, elecPred, manPred, agPred, ngPred], axis=0)
-# # mse = mean_squared_error(y_test, average)
+# average = np.mean([coalPred, elecPred, manPred, agPred, ngPred], axis=0)
+# mse = mean_squared_error(y_test, average)
 
